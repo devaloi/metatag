@@ -47,12 +47,13 @@ class MetaTag_Open_Graph {
 	 * Output OG tags for singular posts and pages.
 	 */
 	private function output_singular_tags() {
-		$post_id = get_queried_object_id();
-		$post    = get_queried_object();
+		$post = MetaTag_Helpers::get_current_post();
 
-		if ( ! $post instanceof \WP_Post ) {
+		if ( ! $post ) {
 			return;
 		}
+
+		$post_id = $post->ID;
 
 		$type = ( 'post' === $post->post_type ) ? 'article' : 'website';
 		MetaTag_Helpers::output_property_tag( 'og:type', $type );

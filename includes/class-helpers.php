@@ -23,6 +23,9 @@ class MetaTag_Helpers {
 	 */
 	const META_PREFIX = '_metatag_';
 
+	/** Word limit for auto-generated descriptions. */
+	const DESCRIPTION_WORD_LIMIT = 30;
+
 	/**
 	 * Get the SEO title for a post, falling back to the post title.
 	 *
@@ -58,11 +61,11 @@ class MetaTag_Helpers {
 		}
 
 		if ( $post->post_excerpt ) {
-			return wp_trim_words( $post->post_excerpt, 30, '' );
+			return wp_trim_words( $post->post_excerpt, self::DESCRIPTION_WORD_LIMIT, '' );
 		}
 
 		if ( $post->post_content ) {
-			return wp_trim_words( wp_strip_all_tags( $post->post_content ), 30, '' );
+			return wp_trim_words( wp_strip_all_tags( $post->post_content ), self::DESCRIPTION_WORD_LIMIT, '' );
 		}
 
 		return '';
@@ -189,5 +192,21 @@ class MetaTag_Helpers {
 	public static function get_homepage_description() {
 		$desc = MetaTag::get_setting( 'homepage_description' );
 		return $desc ? $desc : get_bloginfo( 'description' );
+	}
+
+	/**
+	 * Get the current singular post object, if available.
+	 *
+	 * Centralizes the is_singular() + get_queried_object() + instanceof WP_Post
+	 * pattern used across Open Graph, Twitter Card, and meta output classes.
+	 *
+	 * @return \WP_Post|null Post object or null if not a singular view.
+	 */
+	public static function get_current_post() {
+		if ( is_singular() ) {
+			$post = get_queried_object();
+			return ( $post instanceof \WP_Post ) ? $post : null;
+		}
+		return null;
 	}
 }

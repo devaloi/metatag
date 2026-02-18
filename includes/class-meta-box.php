@@ -14,6 +14,15 @@ defined( 'ABSPATH' ) || exit;
  */
 class MetaTag_Meta_Box {
 
+	/** Recommended maximum characters for SEO title. */
+	const TITLE_MAX_CHARS = 60;
+
+	/** Recommended maximum characters for meta description. */
+	const DESC_MAX_CHARS = 160;
+
+	/** Hard limit for meta description field. */
+	const DESC_HARD_LIMIT = 320;
+
 	/**
 	 * Constructor.
 	 */
@@ -89,11 +98,11 @@ class MetaTag_Meta_Box {
 					value="<?php echo esc_attr( $fields['title'] ); ?>"
 					class="widefat metatag-char-count"
 					data-target="metatag-title-count"
-					data-limit="60"
+					data-limit="<?php echo esc_attr( self::TITLE_MAX_CHARS ); ?>"
 					maxlength="120"
 				/>
 				<span class="metatag-counter">
-					<span id="metatag-title-count"><?php echo esc_html( strlen( $fields['title'] ) ); ?></span>/60
+					<span id="metatag-title-count"><?php echo esc_html( strlen( $fields['title'] ) ); ?></span>/<?php echo esc_html( self::TITLE_MAX_CHARS ); ?>
 				</span>
 			</div>
 
@@ -106,12 +115,12 @@ class MetaTag_Meta_Box {
 					name="metatag_description"
 					class="widefat metatag-char-count"
 					data-target="metatag-desc-count"
-					data-limit="160"
+					data-limit="<?php echo esc_attr( self::DESC_MAX_CHARS ); ?>"
 					rows="3"
-					maxlength="320"
+					maxlength="<?php echo esc_attr( self::DESC_HARD_LIMIT ); ?>"
 				><?php echo esc_textarea( $fields['description'] ); ?></textarea>
 				<span class="metatag-counter">
-					<span id="metatag-desc-count"><?php echo esc_html( strlen( $fields['description'] ) ); ?></span>/160
+					<span id="metatag-desc-count"><?php echo esc_html( strlen( $fields['description'] ) ); ?></span>/<?php echo esc_html( self::DESC_MAX_CHARS ); ?>
 				</span>
 			</div>
 

@@ -118,10 +118,10 @@ class MetaTag_Meta_Output {
 		}
 
 		if ( is_singular() ) {
-			$post_id = get_queried_object_id();
-			$post    = get_queried_object();
+			$post = MetaTag_Helpers::get_current_post();
 
-			if ( $post instanceof \WP_Post ) {
+			if ( $post ) {
+				$post_id = $post->ID;
 				return MetaTag_Helpers::get_post_description( $post_id, $post );
 			}
 		}

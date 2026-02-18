@@ -58,6 +58,12 @@ class MetaTag {
 
 	/**
 	 * Register WordPress hooks.
+	 *
+	 * wp_head priorities:
+	 *   1 — Meta description, canonical, robots (before other SEO plugins)
+	 *   2 — Open Graph tags
+	 *   3 — Twitter Card tags
+	 *   4 — JSON-LD structured data
 	 */
 	private function init_hooks() {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );

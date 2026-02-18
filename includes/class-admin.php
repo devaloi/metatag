@@ -21,6 +21,9 @@ class MetaTag_Admin {
 	 */
 	const OPTION_NAME = 'metatag_settings';
 
+	/** Available title separator characters. */
+	const TITLE_SEPARATORS = array( '|', '-', '–', '—', '·', '•', '»', '/' );
+
 	/**
 	 * Constructor.
 	 */
@@ -212,7 +215,7 @@ class MetaTag_Admin {
 	 */
 	public function render_separator_field() {
 		$value      = MetaTag::get_setting( 'title_separator', '|' );
-		$separators = array( '|', '-', '–', '—', '·', '•', '»', '/' );
+		$separators = self::TITLE_SEPARATORS;
 		echo '<select name="' . esc_attr( self::OPTION_NAME ) . '[title_separator]">';
 		foreach ( $separators as $sep ) {
 			printf(
