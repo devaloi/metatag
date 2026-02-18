@@ -100,7 +100,12 @@ class MetaTag_JSON_LD {
 			);
 		}
 
-		return array( $schema, $breadcrumbs ? $breadcrumbs : null );
+		$result = array( $schema );
+		if ( $breadcrumbs ) {
+			$result[] = $breadcrumbs;
+		}
+
+		return $result;
 	}
 
 	/**

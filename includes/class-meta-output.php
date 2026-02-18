@@ -20,6 +20,7 @@ class MetaTag_Meta_Output {
 	public function __construct() {
 		add_action( 'wp_head', array( $this, 'output_meta_tags' ), 1 );
 		add_filter( 'document_title_parts', array( $this, 'filter_title' ) );
+		add_filter( 'document_title_separator', array( $this, 'filter_title_separator' ) );
 	}
 
 	/**
@@ -87,13 +88,18 @@ class MetaTag_Meta_Output {
 			}
 		}
 
-		$separator = MetaTag::get_setting( 'title_separator', '|' );
-		if ( isset( $title_parts['site'] ) && $separator ) {
-			$title_parts['site'] = $separator . ' ' . $title_parts['site'];
-			unset( $title_parts['tagline'] );
-		}
-
 		return $title_parts;
+	}
+
+	/**
+	 * Filter the document title separator.
+	 *
+	 * @param string $separator Default separator.
+	 * @return string Custom separator.
+	 */
+	public function filter_title_separator( $separator ) {
+		$custom = MetaTag::get_setting( 'title_separator' );
+		return $custom ? $custom : $separator;
 	}
 
 	/**
