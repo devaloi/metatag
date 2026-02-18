@@ -58,7 +58,13 @@ class MetaTag_JSON_LD {
 	private function get_article_schema() {
 		$post_id = get_queried_object_id();
 		$post    = get_queried_object();
-		$author  = get_userdata( $post->post_author );
+
+		if ( ! $post instanceof \WP_Post ) {
+			return array();
+		}
+
+		$author      = get_userdata( $post->post_author );
+		$author_name = ( $author instanceof \WP_User ) ? $author->display_name : '';
 
 		$schema = array(
 			'@context'      => 'https://schema.org',
@@ -69,27 +75,24 @@ class MetaTag_JSON_LD {
 			'dateModified'  => get_the_modified_date( 'c', $post_id ),
 			'author'        => array(
 				'@type' => 'Person',
-				'name'  => $author ? $author->display_name : '',
+				'name'  => $author_name,
 			),
 			'publisher'     => $this->get_publisher(),
 		);
 
-		$description = get_post_meta( $post_id, '_metatag_description', true );
+		$description = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . 'description', true );
 		if ( $description ) {
 			$schema['description'] = $description;
 		}
 
-		$thumbnail_id = get_post_thumbnail_id( $post_id );
-		if ( $thumbnail_id ) {
-			$image = wp_get_attachment_image_src( $thumbnail_id, 'full' );
-			if ( $image ) {
-				$schema['image'] = array(
-					'@type'  => 'ImageObject',
-					'url'    => $image[0],
-					'width'  => $image[1],
-					'height' => $image[2],
-				);
-			}
+		$image_data = MetaTag_Helpers::get_post_image( $post_id, $post );
+		if ( $image_data ) {
+			$schema['image'] = array(
+				'@type'  => 'ImageObject',
+				'url'    => $image_data['url'],
+				'width'  => $image_data['width'],
+				'height' => $image_data['height'],
+			);
 		}
 
 		$breadcrumbs = $this->get_breadcrumb_list( $post_id, $post );
@@ -126,7 +129,7 @@ class MetaTag_JSON_LD {
 			'publisher'     => $this->get_publisher(),
 		);
 
-		$description = get_post_meta( $post_id, '_metatag_description', true );
+		$description = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . 'description', true );
 		if ( $description ) {
 			$schema['description'] = $description;
 		}

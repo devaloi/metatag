@@ -47,6 +47,7 @@ class MetaTag {
 	private function load_dependencies() {
 		$includes = METATAG_PLUGIN_DIR . 'includes/';
 
+		require_once $includes . 'class-helpers.php';
 		require_once $includes . 'class-meta-box.php';
 		require_once $includes . 'class-meta-output.php';
 		require_once $includes . 'class-open-graph.php';
@@ -67,7 +68,7 @@ class MetaTag {
 		new MetaTag_Twitter_Card();
 		new MetaTag_JSON_LD();
 
-		if ( is_admin() ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			new MetaTag_Admin();
 		}
 	}
@@ -83,10 +84,9 @@ class MetaTag {
 	 * Plugin activation callback.
 	 */
 	public static function activate() {
-		update_option(
-			'metatag_settings',
-			self::get_default_settings()
-		);
+		if ( ! get_option( 'metatag_settings' ) ) {
+			update_option( 'metatag_settings', self::get_default_settings() );
+		}
 	}
 
 	/**

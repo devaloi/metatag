@@ -74,7 +74,7 @@ class MetaTag_Meta_Output {
 
 		if ( is_singular() ) {
 			$post_id   = get_queried_object_id();
-			$seo_title = get_post_meta( $post_id, '_metatag_title', true );
+			$seo_title = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . 'title', true );
 
 			if ( $seo_title ) {
 				$title_parts['title'] = $seo_title;
@@ -121,17 +121,8 @@ class MetaTag_Meta_Output {
 			$post_id = get_queried_object_id();
 			$post    = get_queried_object();
 
-			$custom = get_post_meta( $post_id, '_metatag_description', true );
-			if ( $custom ) {
-				return $custom;
-			}
-
-			if ( $post && $post->post_excerpt ) {
-				return wp_trim_words( $post->post_excerpt, 30, '' );
-			}
-
-			if ( $post && $post->post_content ) {
-				return wp_trim_words( wp_strip_all_tags( $post->post_content ), 30, '' );
+			if ( $post instanceof \WP_Post ) {
+				return MetaTag_Helpers::get_post_description( $post_id, $post );
 			}
 		}
 
@@ -154,7 +145,7 @@ class MetaTag_Meta_Output {
 		}
 
 		$post_id  = get_queried_object_id();
-		$custom   = get_post_meta( $post_id, '_metatag_canonical', true );
+		$custom   = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . 'canonical', true );
 
 		if ( $custom ) {
 			return $custom;
@@ -174,8 +165,8 @@ class MetaTag_Meta_Output {
 		}
 
 		$post_id  = get_queried_object_id();
-		$noindex  = get_post_meta( $post_id, '_metatag_noindex', true );
-		$nofollow = get_post_meta( $post_id, '_metatag_nofollow', true );
+		$noindex  = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . 'noindex', true );
+		$nofollow = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . 'nofollow', true );
 
 		$directives = array();
 		if ( '1' === $noindex ) {

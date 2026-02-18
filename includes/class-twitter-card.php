@@ -11,6 +11,8 @@ defined( 'ABSPATH' ) || exit;
  * Class MetaTag_Twitter_Card
  *
  * Outputs Twitter Card meta tags in the document head.
+ * Reuses shared helpers for title, description, and image resolution
+ * to stay consistent with Open Graph values.
  */
 class MetaTag_Twitter_Card {
 
@@ -31,37 +33,33 @@ class MetaTag_Twitter_Card {
 
 		echo "\n<!-- MetaTag Twitter Card -->\n";
 
-		$this->output_tag( 'twitter:card', 'summary_large_image' );
+		MetaTag_Helpers::output_name_tag( 'twitter:card', 'summary_large_image' );
 
 		$twitter_handle = MetaTag::get_setting( 'twitter_handle' );
 		if ( $twitter_handle ) {
-			$handle = $this->format_handle( $twitter_handle );
-			$this->output_tag( 'twitter:site', $handle );
+			MetaTag_Helpers::output_name_tag( 'twitter:site', self::format_handle( $twitter_handle ) );
 		}
 
 		if ( is_singular() ) {
 			$post_id = get_queried_object_id();
 			$post    = get_queried_object();
 
-			$og = new MetaTag_Open_Graph();
+			if ( $post instanceof \WP_Post ) {
+				MetaTag_Helpers::output_name_tag( 'twitter:title', MetaTag_Helpers::get_post_title( $post_id ) );
+				MetaTag_Helpers::output_name_tag( 'twitter:description', MetaTag_Helpers::get_post_description( $post_id, $post ) );
 
-			$this->output_tag( 'twitter:title', $og->get_title( $post_id, $post ) );
-			$this->output_tag( 'twitter:description', $og->get_description( $post_id, $post ) );
-
-			$image_data = $og->get_image( $post_id, $post );
-			if ( $image_data ) {
-				$this->output_tag( 'twitter:image', $image_data['url'] );
+				$image_data = MetaTag_Helpers::get_post_image( $post_id, $post );
+				if ( $image_data ) {
+					MetaTag_Helpers::output_name_tag( 'twitter:image', $image_data['url'] );
+				}
 			}
 		} elseif ( is_front_page() ) {
-			$title = MetaTag::get_setting( 'homepage_title' );
-			$this->output_tag( 'twitter:title', $title ? $title : get_bloginfo( 'name' ) );
-
-			$desc = MetaTag::get_setting( 'homepage_description' );
-			$this->output_tag( 'twitter:description', $desc ? $desc : get_bloginfo( 'description' ) );
+			MetaTag_Helpers::output_name_tag( 'twitter:title', MetaTag_Helpers::get_homepage_title() );
+			MetaTag_Helpers::output_name_tag( 'twitter:description', MetaTag_Helpers::get_homepage_description() );
 
 			$image = MetaTag::get_setting( 'default_og_image' );
 			if ( $image ) {
-				$this->output_tag( 'twitter:image', $image );
+				MetaTag_Helpers::output_name_tag( 'twitter:image', $image );
 			}
 		}
 
@@ -71,31 +69,17 @@ class MetaTag_Twitter_Card {
 	/**
 	 * Format a Twitter handle to include the @ prefix.
 	 *
-	 * @param string $handle Twitter handle.
-	 * @return string Formatted handle.
+	 * @param string $handle Raw Twitter handle input.
+	 * @return string Handle with @ prefix.
 	 */
-	private function format_handle( $handle ) {
+	private static function format_handle( $handle ) {
 		$handle = trim( $handle );
-		if ( $handle && '@' !== $handle[0] ) {
+		if ( '' === $handle ) {
+			return '';
+		}
+		if ( '@' !== $handle[0] ) {
 			$handle = '@' . $handle;
 		}
 		return $handle;
-	}
-
-	/**
-	 * Output a single Twitter meta tag.
-	 *
-	 * @param string $name    Meta tag name.
-	 * @param string $content Tag content.
-	 */
-	private function output_tag( $name, $content ) {
-		if ( '' === $content && '0' !== $content ) {
-			return;
-		}
-		printf(
-			'<meta name="%s" content="%s" />' . "\n",
-			esc_attr( $name ),
-			esc_attr( $content )
-		);
 	}
 }

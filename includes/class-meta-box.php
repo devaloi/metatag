@@ -15,18 +15,11 @@ defined( 'ABSPATH' ) || exit;
 class MetaTag_Meta_Box {
 
 	/**
-	 * Meta key prefix.
-	 *
-	 * @var string
-	 */
-	const META_PREFIX = '_metatag_';
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( $this, 'register_meta_box' ) );
-		add_action( 'save_post', array( $this, 'save_meta_box' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'save_meta_box' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
@@ -180,7 +173,7 @@ class MetaTag_Meta_Box {
 	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post    Post object.
 	 */
-	public function save_meta_box( $post_id, $post ) {
+	public function save_meta_box( $post_id ) {
 		if ( ! isset( $_POST['metatag_nonce'] ) ) {
 			return;
 		}
@@ -207,7 +200,7 @@ class MetaTag_Meta_Box {
 		);
 
 		foreach ( $fields as $key => $value ) {
-			update_post_meta( $post_id, self::META_PREFIX . $key, $value );
+			update_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . $key, $value );
 		}
 	}
 
@@ -222,7 +215,7 @@ class MetaTag_Meta_Box {
 		$values = array();
 
 		foreach ( $keys as $key ) {
-			$values[ $key ] = get_post_meta( $post_id, self::META_PREFIX . $key, true );
+			$values[ $key ] = get_post_meta( $post_id, MetaTag_Helpers::META_PREFIX . $key, true );
 			if ( false === $values[ $key ] ) {
 				$values[ $key ] = '';
 			}

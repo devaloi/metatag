@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for MetaTag_Open_Graph.
+ * Tests for MetaTag_Open_Graph and shared helpers.
  *
  * @package MetaTag
  */
@@ -26,32 +26,30 @@ class Test_Open_Graph extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test OG title uses custom meta title when set.
+	 * Test post title uses custom meta title when set.
 	 */
-	public function test_og_title_uses_custom_meta() {
+	public function test_post_title_uses_custom_meta() {
 		$post_id = self::factory()->post->create( array( 'post_title' => 'Original Title' ) );
-		$post    = get_post( $post_id );
 		update_post_meta( $post_id, '_metatag_title', 'Custom OG Title' );
 
-		$title = $this->og->get_title( $post_id, $post );
+		$title = MetaTag_Helpers::get_post_title( $post_id );
 		$this->assertEquals( 'Custom OG Title', $title );
 	}
 
 	/**
-	 * Test OG title falls back to post title.
+	 * Test post title falls back to post title.
 	 */
-	public function test_og_title_falls_back_to_post_title() {
+	public function test_post_title_falls_back_to_post_title() {
 		$post_id = self::factory()->post->create( array( 'post_title' => 'Original Title' ) );
-		$post    = get_post( $post_id );
 
-		$title = $this->og->get_title( $post_id, $post );
+		$title = MetaTag_Helpers::get_post_title( $post_id );
 		$this->assertEquals( 'Original Title', $title );
 	}
 
 	/**
-	 * Test OG description uses custom meta description.
+	 * Test post description uses custom meta description.
 	 */
-	public function test_og_description_uses_custom_meta() {
+	public function test_post_description_uses_custom_meta() {
 		$post_id = self::factory()->post->create(
 			array(
 				'post_content' => 'Content here.',
@@ -61,14 +59,14 @@ class Test_Open_Graph extends WP_UnitTestCase {
 		$post = get_post( $post_id );
 		update_post_meta( $post_id, '_metatag_description', 'Custom OG Description' );
 
-		$desc = $this->og->get_description( $post_id, $post );
+		$desc = MetaTag_Helpers::get_post_description( $post_id, $post );
 		$this->assertEquals( 'Custom OG Description', $desc );
 	}
 
 	/**
-	 * Test OG description falls back to excerpt.
+	 * Test post description falls back to excerpt.
 	 */
-	public function test_og_description_falls_back_to_excerpt() {
+	public function test_post_description_falls_back_to_excerpt() {
 		$post_id = self::factory()->post->create(
 			array(
 				'post_content' => 'Content here.',
@@ -77,14 +75,14 @@ class Test_Open_Graph extends WP_UnitTestCase {
 		);
 		$post = get_post( $post_id );
 
-		$desc = $this->og->get_description( $post_id, $post );
+		$desc = MetaTag_Helpers::get_post_description( $post_id, $post );
 		$this->assertStringContainsString( 'excerpt text', $desc );
 	}
 
 	/**
-	 * Test OG description falls back to content when no excerpt.
+	 * Test post description falls back to content when no excerpt.
 	 */
-	public function test_og_description_falls_back_to_content() {
+	public function test_post_description_falls_back_to_content() {
 		$post_id = self::factory()->post->create(
 			array(
 				'post_content' => 'The actual post content for testing.',
@@ -93,25 +91,25 @@ class Test_Open_Graph extends WP_UnitTestCase {
 		);
 		$post = get_post( $post_id );
 
-		$desc = $this->og->get_description( $post_id, $post );
+		$desc = MetaTag_Helpers::get_post_description( $post_id, $post );
 		$this->assertStringContainsString( 'actual post content', $desc );
 	}
 
 	/**
-	 * Test OG image returns null when no image available.
+	 * Test post image returns null when no image available.
 	 */
-	public function test_og_image_returns_null_when_no_image() {
+	public function test_post_image_returns_null_when_no_image() {
 		$post_id = self::factory()->post->create( array( 'post_content' => 'No images here.' ) );
 		$post    = get_post( $post_id );
 
-		$image = $this->og->get_image( $post_id, $post );
+		$image = MetaTag_Helpers::get_post_image( $post_id, $post );
 		$this->assertNull( $image );
 	}
 
 	/**
-	 * Test OG image extracts first content image as fallback.
+	 * Test post image extracts first content image as fallback.
 	 */
-	public function test_og_image_falls_back_to_content_image() {
+	public function test_post_image_falls_back_to_content_image() {
 		$post_id = self::factory()->post->create(
 			array(
 				'post_content' => 'Text <img src="https://example.com/photo.jpg" /> more text.',
@@ -119,9 +117,17 @@ class Test_Open_Graph extends WP_UnitTestCase {
 		);
 		$post = get_post( $post_id );
 
-		$image = $this->og->get_image( $post_id, $post );
+		$image = MetaTag_Helpers::get_post_image( $post_id, $post );
 		$this->assertNotNull( $image );
 		$this->assertEquals( 'https://example.com/photo.jpg', $image['url'] );
+	}
+
+	/**
+	 * Test first content image extraction with no images returns null.
+	 */
+	public function test_first_content_image_returns_null_for_empty() {
+		$this->assertNull( MetaTag_Helpers::get_first_content_image( '' ) );
+		$this->assertNull( MetaTag_Helpers::get_first_content_image( 'No images here' ) );
 	}
 
 	/**
@@ -176,5 +182,13 @@ class Test_Open_Graph extends WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		$this->assertStringContainsString( 'content="website"', $output );
+	}
+
+	/**
+	 * Test post description returns empty for non-WP_Post objects.
+	 */
+	public function test_post_description_returns_empty_for_invalid_post() {
+		$desc = MetaTag_Helpers::get_post_description( 0 );
+		$this->assertEmpty( $desc );
 	}
 }
