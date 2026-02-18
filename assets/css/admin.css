@@ -1,0 +1,32 @@
+/**
+ * MetaTag Admin Styles
+ *
+ * @package MetaTag
+ */
+
+.metatag-meta-box .metatag-field {
+	margin-bottom: 16px;
+}
+
+.metatag-meta-box .metatag-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.metatag-meta-box .metatag-counter {
+	display: block;
+	margin-top: 4px;
+	font-size: 12px;
+	color: #666;
+}
+
+.metatag-meta-box .metatag-counter .over-limit {
+	color: #d63638;
+	font-weight: 600;
+}
+
+.metatag-meta-box .metatag-checkboxes label {
+	display: inline;
+	font-weight: 400;
+}
