@@ -19,6 +19,12 @@ Thumbs.db
 # Build artifacts
 *.phar
 
+# Python
+__pycache__/
+
+# Temp files
+tmp/
+
 # Test output
 .phpunit.result.cache
 coverage/
