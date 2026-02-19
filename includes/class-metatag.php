@@ -59,7 +59,7 @@ class MetaTag {
 	/**
 	 * Register WordPress hooks.
 	 *
-	 * wp_head priorities:
+	 * Hook priorities for wp_head:
 	 *   1 — Meta description, canonical, robots (before other SEO plugins)
 	 *   2 — Open Graph tags
 	 *   3 — Twitter Card tags
@@ -123,12 +123,12 @@ class MetaTag {
 	/**
 	 * Get a specific plugin setting.
 	 *
-	 * @param string $key     Setting key.
-	 * @param mixed  $default Default value if setting not found.
+	 * @param string $key           Setting key.
+	 * @param mixed  $default_value Default value if setting not found.
 	 * @return mixed
 	 */
-	public static function get_setting( $key, $default = '' ) {
+	public static function get_setting( $key, $default_value = '' ) {
 		$settings = get_option( 'metatag_settings', self::get_default_settings() );
-		return isset( $settings[ $key ] ) ? $settings[ $key ] : $default;
+		return isset( $settings[ $key ] ) ? $settings[ $key ] : $default_value;
 	}
 }

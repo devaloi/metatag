@@ -73,25 +73,6 @@ class Test_Meta_Box extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test save_meta_box skips during autosave.
-	 */
-	public function test_save_skips_autosave() {
-		$post_id = self::factory()->post->create();
-
-		define( 'DOING_AUTOSAVE', true );
-
-		$_POST = array(
-			'metatag_nonce' => wp_create_nonce( 'metatag_save_meta' ),
-			'metatag_title' => 'Autosave title',
-		);
-
-		$this->meta_box->save_meta_box( $post_id );
-
-		$title = get_post_meta( $post_id, '_metatag_title', true );
-		$this->assertEmpty( $title );
-	}
-
-	/**
 	 * Test save_meta_box saves with valid nonce and capability.
 	 */
 	public function test_save_with_valid_nonce_and_capability() {
@@ -179,5 +160,27 @@ class Test_Meta_Box extends WP_UnitTestCase {
 		$this->meta_box->register_meta_box();
 
 		$this->assertArrayHasKey( 'metatag-seo', $wp_meta_boxes['product']['normal']['high'] );
+	}
+
+	/**
+	 * Test save_meta_box skips during autosave.
+	 *
+	 * IMPORTANT: This test must be last because define() is permanent
+	 * and DOING_AUTOSAVE would affect all subsequent save tests.
+	 */
+	public function test_save_skips_autosave() {
+		$post_id = self::factory()->post->create();
+
+		define( 'DOING_AUTOSAVE', true );
+
+		$_POST = array(
+			'metatag_nonce' => wp_create_nonce( 'metatag_save_meta' ),
+			'metatag_title' => 'Autosave title',
+		);
+
+		$this->meta_box->save_meta_box( $post_id );
+
+		$title = get_post_meta( $post_id, '_metatag_title', true );
+		$this->assertEmpty( $title );
 	}
 }

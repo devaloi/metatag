@@ -156,9 +156,10 @@ class Test_JSON_LD extends WP_UnitTestCase {
 	 * Test no JSON-LD on archive pages.
 	 */
 	public function test_no_json_ld_on_archive() {
-		self::factory()->post->create_many( 3 );
+		$cat_id = self::factory()->category->create( array( 'name' => 'Test Cat' ) );
+		self::factory()->post->create_many( 3, array( 'post_category' => array( $cat_id ) ) );
 
-		$this->go_to( get_post_type_archive_link( 'post' ) );
+		$this->go_to( get_category_link( $cat_id ) );
 
 		ob_start();
 		$this->json_ld->output_json_ld();

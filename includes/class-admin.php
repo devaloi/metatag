@@ -238,6 +238,7 @@ class MetaTag_Admin {
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( $value )
 		);
+		/* translators: %title% and %sitename% are placeholder tokens, not printf placeholders. */
 		echo '<p class="description">' . esc_html__( 'Available tokens: %title%, %sitename%', 'metatag' ) . '</p>';
 	}
 

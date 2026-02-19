@@ -1,5 +1,6 @@
 # MetaTag
 
+[![CI](https://github.com/devaloi/metatag/actions/workflows/ci.yml/badge.svg)](https://github.com/devaloi/metatag/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PHP 8.0+](https://img.shields.io/badge/PHP-8.0%2B-8892BF.svg)](https://www.php.net/)
 [![WordPress 6.0+](https://img.shields.io/badge/WordPress-6.0%2B-21759B.svg)](https://wordpress.org/)

@@ -179,8 +179,7 @@ class MetaTag_Meta_Box {
 	/**
 	 * Save meta box data.
 	 *
-	 * @param int     $post_id Post ID.
-	 * @param WP_Post $post    Post object.
+	 * @param int $post_id Post ID.
 	 */
 	public function save_meta_box( $post_id ) {
 		if ( ! isset( $_POST['metatag_nonce'] ) ) {
